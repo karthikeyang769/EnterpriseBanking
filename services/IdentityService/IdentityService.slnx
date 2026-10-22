@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/IdentityService.Api/IdentityService.Api.csproj" />
+    <Project Path="src/IdentityService.Application/IdentityService.Application.csproj" />
+    <Project Path="src/IdentityService.Domain/IdentityService.Domain.csproj" />
+    <Project Path="src/IdentityService.Infrastructure/IdentityService.Infrastructure.csproj" />
+    <Project Path="src/IdentityService.Persistence/IdentityService.Persistence.csproj" />
+  </Folder>
+  <Project Path="../../shared/SharedContracts/SharedContracts.csproj" />
+  <Project Path="../../shared/SharedEvents/SharedEvents.csproj" />
+  <Project Path="../../shared/SharedInfrastructure/SharedInfrastructure.csproj" />
+  <Project Path="../../shared/SharedKernel/SharedKernel.csproj" />
+</Solution>

@@ -1,0 +1,318 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=EnterpriseBankDB
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - banking-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - banking-network
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - banking-network
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio
+    container_name: minio
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=admin123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    networks:
+      - banking-network
+    restart: unless-stopped
+
+  elasticsearch:
+    image: elasticsearch:8.12.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - banking-network
+    restart: unless-stopped
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.55
+    container_name: jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      - banking-network
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.50.0
+    container_name: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-lifecycle
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - banking-network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.3.3
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana-data:/var/lib/grafana
+    networks:
+      - banking-network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: ..
+      dockerfile: gateway/Banking.ApiGateway/Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8000:8080"
+    networks:
+      - banking-network
+    depends_on:
+      - identity-service
+      - customer-service
+      - account-service
+      - transaction-service
+    restart: unless-stopped
+
+  identity-service:
+    build:
+      context: ..
+      dockerfile: services/IdentityService/Dockerfile
+    container_name: identity-service
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=EnterpriseBankDB;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+      - Redis__Configuration=redis:6379
+    networks:
+      - banking-network
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    restart: unless-stopped
+
+  customer-service:
+    build:
+      context: ..
+      dockerfile: services/CustomerService/Dockerfile
+    container_name: customer-service
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=EnterpriseBankDB;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+      - Redis__Configuration=redis:6379
+    networks:
+      - banking-network
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    restart: unless-stopped
+
+  account-service:
+    build:
+      context: ..
+      dockerfile: services/AccountService/Dockerfile
+    container_name: account-service
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=EnterpriseBankDB;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+      - Redis__Configuration=redis:6379
+    networks:
+      - banking-network
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    restart: unless-stopped
+
+  transaction-service:
+    build:
+      context: ..
+      dockerfile: services/TransactionService/Dockerfile
+    container_name: transaction-service
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=EnterpriseBankDB;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+      - Redis__Configuration=redis:6379
+    networks:
+      - banking-network
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    restart: unless-stopped
+
+  audit-service:
+    build:
+      context: ..
+      dockerfile: services/AuditService/Dockerfile
+    container_name: audit-service
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=EnterpriseBankDB;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+    networks:
+      - banking-network
+    depends_on:
+      - postgres
+      - rabbitmq
+    restart: unless-stopped
+
+  notification-service:
+    build:
+      context: ..
+      dockerfile: services/NotificationService/Dockerfile
+    container_name: notification-service
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=EnterpriseBankDB;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+    networks:
+      - banking-network
+    depends_on:
+      - postgres
+      - rabbitmq
+    restart: unless-stopped
+
+  beneficiary-service:
+    build:
+      context: ..
+      dockerfile: services/BeneficiaryService/Dockerfile
+    container_name: beneficiary-service
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=EnterpriseBankDB;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+    networks:
+      - banking-network
+    depends_on:
+      - postgres
+      - rabbitmq
+    restart: unless-stopped
+
+  document-service:
+    build:
+      context: ..
+      dockerfile: services/DocumentService/Dockerfile
+    container_name: document-service
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=EnterpriseBankDB;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+      - MinIO__Host=minio
+      - MinIO__Port=9000
+    networks:
+      - banking-network
+    depends_on:
+      - postgres
+      - rabbitmq
+      - minio
+    restart: unless-stopped
+
+  reporting-service:
+    build:
+      context: ..
+      dockerfile: services/ReportingService/Dockerfile
+    container_name: reporting-service
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=EnterpriseBankDB;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+      - MinIO__Host=minio
+      - MinIO__Port=9000
+    networks:
+      - banking-network
+    depends_on:
+      - postgres
+      - rabbitmq
+      - minio
+    restart: unless-stopped
+
+  search-service:
+    build:
+      context: ..
+      dockerfile: services/SearchService/Dockerfile
+    container_name: search-service
+    environment:
+      - RabbitMQ__Host=rabbitmq
+      - Elasticsearch__Uri=http://elasticsearch:9200
+    networks:
+      - banking-network
+    depends_on:
+      - rabbitmq
+      - elasticsearch
+    restart: unless-stopped
+
+networks:
+  banking-network:
+    name: banking-network
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  rabbitmq-data:
+  minio-data:
+  elasticsearch-data:
+  prometheus-data:
+  grafana-data:

@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TransactionService.Api/TransactionService.Api.csproj" />
+    <Project Path="src/TransactionService.Application/TransactionService.Application.csproj" />
+    <Project Path="src/TransactionService.Domain/TransactionService.Domain.csproj" />
+    <Project Path="src/TransactionService.Infrastructure/TransactionService.Infrastructure.csproj" />
+    <Project Path="src/TransactionService.Persistence/TransactionService.Persistence.csproj" />
+  </Folder>
+  <Project Path="../../shared/SharedContracts/SharedContracts.csproj" />
+  <Project Path="../../shared/SharedEvents/SharedEvents.csproj" />
+  <Project Path="../../shared/SharedInfrastructure/SharedInfrastructure.csproj" />
+  <Project Path="../../shared/SharedKernel/SharedKernel.csproj" />
+</Solution>

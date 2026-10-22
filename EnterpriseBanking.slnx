@@ -1,0 +1,51 @@
+<Solution>
+  <Folder Name="/gateway/">
+    <Project Path="gateway/Banking.ApiGateway/Banking.ApiGateway.csproj" />
+  </Folder>
+  <Folder Name="/services/">
+    <Project Path="services/AuditService/AuditService.csproj" />
+    <Project Path="services/BeneficiaryService/BeneficiaryService.csproj" />
+    <Project Path="services/DocumentService/DocumentService.csproj" />
+    <Project Path="services/NotificationService/NotificationService.csproj" />
+    <Project Path="services/ReportingService/ReportingService.csproj" />
+    <Project Path="services/SearchService/SearchService.csproj" />
+  </Folder>
+  <Folder Name="/services/AccountService/" />
+  <Folder Name="/services/AccountService/src/">
+    <Project Path="services/AccountService/src/AccountService.Api/AccountService.Api.csproj" />
+    <Project Path="services/AccountService/src/AccountService.Application/AccountService.Application.csproj" />
+    <Project Path="services/AccountService/src/AccountService.Domain/AccountService.Domain.csproj" />
+    <Project Path="services/AccountService/src/AccountService.Infrastructure/AccountService.Infrastructure.csproj" />
+    <Project Path="services/AccountService/src/AccountService.Persistence/AccountService.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/services/CustomerService/" />
+  <Folder Name="/services/CustomerService/src/">
+    <Project Path="services/CustomerService/src/CustomerService.Api/CustomerService.Api.csproj" />
+    <Project Path="services/CustomerService/src/CustomerService.Application/CustomerService.Application.csproj" />
+    <Project Path="services/CustomerService/src/CustomerService.Domain/CustomerService.Domain.csproj" />
+    <Project Path="services/CustomerService/src/CustomerService.Infrastructure/CustomerService.Infrastructure.csproj" />
+    <Project Path="services/CustomerService/src/CustomerService.Persistence/CustomerService.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/services/IdentityService/" />
+  <Folder Name="/services/IdentityService/src/">
+    <Project Path="services/IdentityService/src/IdentityService.Api/IdentityService.Api.csproj" />
+    <Project Path="services/IdentityService/src/IdentityService.Application/IdentityService.Application.csproj" />
+    <Project Path="services/IdentityService/src/IdentityService.Domain/IdentityService.Domain.csproj" />
+    <Project Path="services/IdentityService/src/IdentityService.Infrastructure/IdentityService.Infrastructure.csproj" />
+    <Project Path="services/IdentityService/src/IdentityService.Persistence/IdentityService.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/services/TransactionService/" />
+  <Folder Name="/services/TransactionService/src/">
+    <Project Path="services/TransactionService/src/TransactionService.Api/TransactionService.Api.csproj" />
+    <Project Path="services/TransactionService/src/TransactionService.Application/TransactionService.Application.csproj" />
+    <Project Path="services/TransactionService/src/TransactionService.Domain/TransactionService.Domain.csproj" />
+    <Project Path="services/TransactionService/src/TransactionService.Infrastructure/TransactionService.Infrastructure.csproj" />
+    <Project Path="services/TransactionService/src/TransactionService.Persistence/TransactionService.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/shared/">
+    <Project Path="shared/SharedContracts/SharedContracts.csproj" />
+    <Project Path="shared/SharedEvents/SharedEvents.csproj" />
+    <Project Path="shared/SharedInfrastructure/SharedInfrastructure.csproj" />
+    <Project Path="shared/SharedKernel/SharedKernel.csproj" />
+  </Folder>
+</Solution>

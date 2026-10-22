@@ -1,0 +1,6 @@
+@BeneficiaryService_HostAddress = http://localhost:5042
+
+GET {{BeneficiaryService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
