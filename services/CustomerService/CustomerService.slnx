@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CustomerService.Api/CustomerService.Api.csproj" />
+    <Project Path="src/CustomerService.Application/CustomerService.Application.csproj" />
+    <Project Path="src/CustomerService.Domain/CustomerService.Domain.csproj" />
+    <Project Path="src/CustomerService.Infrastructure/CustomerService.Infrastructure.csproj" />
+    <Project Path="src/CustomerService.Persistence/CustomerService.Persistence.csproj" />
+  </Folder>
+  <Project Path="../../shared/SharedContracts/SharedContracts.csproj" />
+  <Project Path="../../shared/SharedEvents/SharedEvents.csproj" />
+  <Project Path="../../shared/SharedInfrastructure/SharedInfrastructure.csproj" />
+  <Project Path="../../shared/SharedKernel/SharedKernel.csproj" />
+</Solution>
